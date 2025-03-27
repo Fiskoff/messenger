@@ -1,6 +1,6 @@
-from datetime import date
+from datetime import datetime
 
-from sqlalchemy import String, func, Index
+from sqlalchemy import String, func
 from sqlalchemy.orm import Mapped, mapped_column
 
 from core.orm_settings import Base
@@ -21,6 +21,6 @@ class UserModel(Base):
     password: Mapped[str] = mapped_column(
         String(128), nullable=False
     )
-    registration_date: Mapped[date] = mapped_column(
+    registration_date: Mapped[datetime] = mapped_column(  # Изменено с date на datetime
         server_default=func.current_timestamp(), nullable=False
     )

@@ -1,18 +1,21 @@
 from sqlalchemy.ext.asyncio import create_async_engine, async_sessionmaker
 
 from core.env_data import env_helper
+from core.orm_settings import Base
 
 
-engine = create_async_engine(
-    url=env_helper.DB_URL,
-    echo=True
-)
+class DataBaseSettings:
+    def __init__(self):
+        self.engine = create_async_engine(
+            url = env_helper.DB_URL,
+            echo = True
+        )
+        self.session_factory = async_sessionmaker(
+            bind=self.engine,
+            autoflush=False,
+            autocommit=False,
+            expire_on_commit=False
+        )
 
-SessionFactory = async_sessionmaker(
-        bind=engine,
-        expire_on_commit=False,
-        autocommit=False,
-)
 
-
-session = SessionFactory()
+db_settings = DataBaseSettings()
