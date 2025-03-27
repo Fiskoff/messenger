@@ -9,7 +9,6 @@ from user.models.user_model import UserModel
 
 
 config = context.config
-config.set_main_option("sqlalchemy.url", env_helper.DB_URL)
 
 if config.config_file_name is not None:
     fileConfig(config.config_file_name)
