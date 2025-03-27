@@ -8,8 +8,11 @@ engine = create_async_engine(
     echo=True
 )
 
-session_factory = async_sessionmaker(
+SessionFactory = async_sessionmaker(
         bind=engine,
         expire_on_commit=False,
         autocommit=False,
 )
+
+
+session = SessionFactory()
