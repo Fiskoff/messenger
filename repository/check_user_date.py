@@ -1,17 +1,19 @@
-import asyncio
 from sqlalchemy import select
 
 from core.db_settings import db_settings
 from models.user_model import UserModel
+from services.password_hashing import verify_password
 
 
 class CheckUniquenessData:
-    def __init__(self, nickname: str, email_address: str, phone_number: str):
+    def __init__(self, nickname: str, email_address: str, phone_number: str, password: str):
         self.nickname = nickname
         self.email_address = email_address
         self.phone_number = phone_number
+        self.password = password
 
-    async def check_all_exists(self) -> bool | tuple:
+
+    async def check_all_exists(self) -> tuple[bool, str]:
         checks = [
             (UserModel.nickname, self.nickname),
             (UserModel.email_address, self.email_address),
@@ -23,20 +25,14 @@ class CheckUniquenessData:
                 stmt = select(UserModel).where(column == value)
                 if (await session.execute(stmt)).scalars().first():
                     return False, value
-        return True, "success"
+            return True, "success"
 
 
-"""
-async def main():
-    checker = CheckUniquenessData(
-        nickname="Sergey",
-        email_address="sergey@example.com",
-        phone_number="+123456789"
-    )
-    result = await checker.check_all_exists()
-    print(result)
-
-
-if __name__ == "__main__":
-    asyncio.run(main())
-"""
+    async def check_password_exists(self) -> tuple[bool, str]:
+        async with db_settings.session_factory() as session:
+            stmt = select(UserModel.password)
+            result = await session.execute(stmt)
+            for db_hashed in result.scalars():
+                if verify_password(self.password, db_hashed):
+                    return False, self.password
+            return True, "success"
