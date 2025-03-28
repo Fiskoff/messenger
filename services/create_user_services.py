@@ -1,4 +1,3 @@
-import asyncio
 from repository.create_user_repository import create_user
 from repository.check_user_date import CheckUniquenessData
 from services.password_hashing import hashing_user_password
@@ -20,7 +19,6 @@ async def check_user_date(**user_data: dict) -> dict:
     if not password_check[0]:
         return {"status": "error", "message": f' Уже используется: "{password_check[1]}"'}
 
-    # Хеширование и создание пользователя
     try:
         hashed_password = hashing_user_password(user_data["password"])
         user_data["password"] = hashed_password
@@ -28,18 +26,3 @@ async def check_user_date(**user_data: dict) -> dict:
         return {"status": "success", "message": "Пользователь создан"}
     except Exception as error:
         return {"status": "error", "message": f"Ошибка создания: {str(error)}"}
-
-"""
-async def main():
-    result = await check_user_date(
-        nickname="S34",
-        email_address="s34",
-        phone_number="+34",
-        password="123456"
-    )
-    print(result)
-
-
-if __name__ == "__main__":
-    asyncio.run(main())
-"""

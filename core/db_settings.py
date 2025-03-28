@@ -1,7 +1,6 @@
 from sqlalchemy.ext.asyncio import create_async_engine, async_sessionmaker
 
 from core.env_data import env_helper
-from core.orm_settings import Base
 
 
 class DataBaseSettings:
