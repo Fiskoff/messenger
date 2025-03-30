@@ -2,7 +2,7 @@ from os import urandom
 from hashlib import pbkdf2_hmac
 
 
-def hashing_user_password(user_password: str, salt=None) -> bytes:
+def hashing_password(user_password: str, salt=None) -> bytes:
     if salt is None:
         salt = urandom(16)
 
@@ -20,6 +20,6 @@ def verify_password(input_password: str, stored_hash: bytes) -> bool:
         return False
 
     salt = stored_hash[:16]
-    new_hash = hashing_user_password(input_password, salt)
+    new_hash = hashing_password(input_password, salt)
     return new_hash == stored_hash
 

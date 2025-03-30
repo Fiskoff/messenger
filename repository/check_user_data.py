@@ -6,11 +6,10 @@ from services.password_hashing import verify_password
 
 
 class CheckUniquenessData:
-    def __init__(self, nickname: str, email_address: str, phone_number: str, password: str):
+    def __init__(self, nickname: str, email_address: str, phone_number: str):
         self.nickname = nickname
         self.email_address = email_address
         self.phone_number = phone_number
-        self.password = password
 
 
     async def check_all_exists(self) -> tuple[bool, str]:
@@ -19,7 +18,6 @@ class CheckUniquenessData:
             (UserModel.email_address, self.email_address),
             (UserModel.phone_number, self.phone_number)
         ]
-
         async with db_settings.session_factory() as session:
             for column, value in checks:
                 stmt = select(UserModel).where(column == value)
@@ -27,12 +25,3 @@ class CheckUniquenessData:
                     return False, value
             return True, "success"
 
-
-    async def check_password_exists(self) -> tuple[bool, str]:
-        async with db_settings.session_factory() as session:
-            stmt = select(UserModel.password)
-            result = await session.execute(stmt)
-            for db_hashed in result.scalars():
-                if verify_password(self.password, db_hashed):
-                    return False, self.password
-            return True, "success"
