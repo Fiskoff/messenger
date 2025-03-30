@@ -9,6 +9,7 @@ class DataBaseSettings:
             url = env_helper.DB_URL,
             echo = True
         )
+
         self.session_factory = async_sessionmaker(
             bind=self.engine,
             autoflush=False,

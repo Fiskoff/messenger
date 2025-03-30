@@ -1,0 +1,44 @@
+from repository.crud_user import create_user, get_user_id, delete_user
+from repository.check_user_data import CheckUniquenessData
+from services.password_hashing import hashing_password
+
+
+
+async def check_user_data(**user_data: dict) -> dict:
+    checker = CheckUniquenessData(
+        nickname=user_data["nickname"],
+        email_address=user_data["email_address"],
+        phone_number=user_data["phone_number"],
+    )
+
+    input_data_check = await checker.check_all_exists()
+    return input_data_check
+
+
+async def create_user_services(**user_data: dict) -> str:
+    is_allowed = await check_user_data(**user_data)
+
+    if is_allowed:
+        try:
+            user_data["password"] = hashing_password(user_data["password"])
+            await create_user(**user_data)
+            return {"status": "success", "message": "Пользователь создан"}
+        except Exception as error:
+            return {"status": "error", "message": f"Ошибка создания: {str(error)}"}
+    else:
+        return {"status": "error", "message": f"Одно из полей уже занято"}
+
+
+async def get_user_id_services(nickname=None) -> int | str:
+    user_id = await get_user_id(nickname=nickname)
+
+    if user_id is None:
+        return {"message": "Пользователь не найден"}
+    return user_id
+
+
+async def delete_user_services(user_id: int) -> dict:
+    user = await delete_user(user_id=user_id)
+    if user is None:
+        return {"message": "Пользователь не найден"}
+    return {"message": f"Пользователь id: {user.id} nickname: {user.nickname} удалён"}

@@ -7,7 +7,6 @@ class UserCreateScheme(BaseModel):
     phone_number: constr(min_length=11, max_length=15)
     password: constr(min_length=8, max_length=100)
 
-
     class Config:
         json_schema_extra = {
             "example": {
@@ -15,5 +14,16 @@ class UserCreateScheme(BaseModel):
                 "email_address": "fiskoff2015@yandex.ru",
                 "phone_number": "89502682589",
                 "password": "password"
+            }
+        }
+
+
+class UserGetIdScheme(BaseModel):
+    nickname: constr(min_length=3, max_length=50, strip_whitespace=True)
+
+    class Config:
+        json_schema_extra = {
+            "example": {
+                "nickname": "Sergey"
             }
         }

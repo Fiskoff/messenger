@@ -2,7 +2,6 @@ from sqlalchemy import select
 
 from core.db_settings import db_settings
 from models.user_model import UserModel
-from services.password_hashing import verify_password
 
 
 class CheckUniquenessData:
@@ -12,7 +11,7 @@ class CheckUniquenessData:
         self.phone_number = phone_number
 
 
-    async def check_all_exists(self) -> tuple[bool, str]:
+    async def check_all_exists(self) -> bool:
         checks = [
             (UserModel.nickname, self.nickname),
             (UserModel.email_address, self.email_address),
@@ -22,6 +21,7 @@ class CheckUniquenessData:
             for column, value in checks:
                 stmt = select(UserModel).where(column == value)
                 if (await session.execute(stmt)).scalars().first():
-                    return False, value
-            return True, "success"
+                    return False
+            return True
+
 

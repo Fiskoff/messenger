@@ -2,7 +2,7 @@ from fastapi import FastAPI
 from uvicorn import run
 
 from core.env_data import env_helper
-from routers.create_user_router import user_router
+from routers.user_router import user_router
 
 
 app = FastAPI()
