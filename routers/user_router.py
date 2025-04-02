@@ -1,6 +1,6 @@
 from fastapi import APIRouter
 
-from schemes.user_scheme import UserCreateScheme, UserGetIdScheme
+from schemes.user_scheme import UserCreateScheme
 from services.user_services import create_user_services, get_user_id_services, delete_user_services, get_user_services
 
 
@@ -12,16 +12,16 @@ async def create_user(user_data: UserCreateScheme) -> dict:
     return await create_user_services(**user_data.model_dump())
 
 
-@user_router.post("/get_id_user/")
-async def get_user_id(user_data: UserGetIdScheme) -> int | dict:
-    return await get_user_id_services(login=user_data.login)
+@user_router.get("/get_id_user/")
+async def get_user_id(user_login: str) -> int | dict:
+    return await get_user_id_services(login=user_login)
 
 
-@user_router.post("/delete_user/")
+@user_router.delete("/delete_user/")
 async def delete_user(user_id: int) -> dict:
     return await delete_user_services(user_id=user_id)
 
-@user_router.post("/get_user/")
+@user_router.get("/get_user/")
 async def get_user(user_id: int) -> dict:
     return await get_user_services(user_id=user_id)
 
