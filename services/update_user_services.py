@@ -1,32 +1,5 @@
-from repository.update_user import update_nickname, update_email, update_phone, update_password
-from repository.check_user_data import check_old_password
-
-
-async def update_nickname_service(user_id: int, new_nickname: str) -> dict:
-    result = await update_nickname(user_id=user_id, new_nickname=new_nickname)
-
-    if result:
-        return {"status": "success", "message": "Никнейм изменён"}
-    else:
-        return {"status": "error", "message": "Никнейм изменить не удалось"}
-
-
-async def update_email_service(user_id: int, new_email: str) -> dict:
-    result = await update_email(user_id=user_id, new_email=new_email)
-
-    if type(result) is bool:
-        return {"status": "success", "message": "Адрес электронной почты изменён"}
-    else:
-        return {"status": "error", "message": f"{result}"}
-
-
-async def update_phone_service(user_id: int, new_phone: str) -> dict:
-    result = await update_phone(user_id=user_id, new_phone=new_phone)
-
-    if type(result) is bool:
-        return {"status": "success", "message": "Номер телефона изменён"}
-    else:
-        return {"status": "error", "message": f"{result}"}
+from repository.update_user import update_password, update_value
+from repository.check_user_data import check_old_password, check_field_uniqueness
 
 
 async def update_password_service(user_id: int, old_password: str, new_password: str) -> dict:
@@ -36,3 +9,25 @@ async def update_password_service(user_id: int, old_password: str, new_password:
         return {"status": "success", "message": "Пароль успешно изменён"}
     except ValueError as error:
         return {"status": "error", "message": str(error)}
+
+
+async def validate_unique_field(field_name: str, value: str) -> bool | str:
+    try:
+        await check_field_uniqueness(field_name, value)
+        return True
+    except ValueError as error:
+        return f"{error}"
+
+
+async def update_user_value(field_name: str, value: str, id_user: int) -> dict:
+    message_check = await validate_unique_field(field_name, value)
+    if  message_check is True:
+        message_update = await update_value(field_name, value, id_user)
+        if message_update is True:
+            return {"status": "success", "message": f"Значение {value} сохранено"}
+        else:
+            print(f"Ошибка обновления: {message_update}")
+            return {"status": "error", "message": message_update}
+    else:
+        print(f"Ошибка проверки уникальности: {message_check}")
+        return {"status": "error", "message": message_check}

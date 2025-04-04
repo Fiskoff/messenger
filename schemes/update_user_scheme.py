@@ -1,14 +1,13 @@
-from pydantic import BaseModel, constr
+from enum import Enum
+from pydantic import BaseModel, Field
 
 
-class UpdateNicknameScheme(BaseModel):
-    user_id: int
-    new_nickname: constr(min_length=3, max_length=50, strip_whitespace=True)
+class FieldName(str, Enum):
+    nickname = "nickname"
+    phone_number = "phone_number"
+    email_address = "email_address"
 
-    class Config:
-        json_schema_extra = {
-            "example": {
-                "user_id": 1,
-                "new_nickname": "New Sergey",
-            }
-        }
+class UpdateUserRequest(BaseModel):
+    field_name: FieldName = Field(..., description="Выберите поле для обновления", example=FieldName.nickname)
+    value: str = Field(..., description="Новое значение для выбранного поля.")
+    user_id: int = Field(..., description="ID пользователя, которого нужно обновить.")

@@ -27,30 +27,6 @@ class CheckUniquenessData:
             return True
 
 
-async def check_login(new_login: str):
-    async with db_settings.session_factory() as session:
-        stmt = select(UserModel).where(UserModel.login == new_login)
-        if (await session.execute(stmt)).scalars().first():
-            raise ValueError(f"Значение {new_login} занято")
-        return True
-
-
-async def check_email_address(new_email: str):
-    async with db_settings.session_factory() as session:
-        stmt = select(UserModel).where(UserModel.email_address == new_email)
-        if (await session.execute(stmt)).scalars().first():
-            raise ValueError(f"Значение {new_email} занято")
-        return True
-
-
-async def check_phone_number(new_phone):
-    async with db_settings.session_factory() as session:
-        stmt = select(UserModel).where(UserModel.phone_number == new_phone)
-        if (await session.execute(stmt)).scalars().first():
-            raise ValueError(f"Значение {new_phone} занято")
-        return True
-
-
 async def check_old_password(user_id: int, old_password: str) -> bool:
     async with db_settings.session_factory() as session:
         stmt = select(UserModel).where(UserModel.id == user_id)
@@ -64,3 +40,15 @@ async def check_old_password(user_id: int, old_password: str) -> bool:
             raise ValueError("Старый пароль неверен")
 
         return True
+
+
+async def check_field_uniqueness(fild_name: str, value: str) -> bool:
+    if fild_name == "nickname":
+        return True
+    else:
+        fild = getattr(UserModel, fild_name)
+        async with db_settings.session_factory() as session:
+            stmt = select(UserModel).where(fild == value)
+            if (await session.execute(stmt)).scalars().first():
+                raise ValueError(f"Значение {value} занято")
+            return True
