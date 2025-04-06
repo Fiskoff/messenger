@@ -50,3 +50,14 @@ async def delete_user(user_id: int) -> UserModel | None:
             await session.commit()
             return user
         return None
+
+
+async def get_user_by_login(login) -> bool | None:
+    stmt = select(UserModel).where(UserModel.login == login)
+
+    async with db_settings.session_factory() as session:
+        result = await session.execute(stmt)
+        user = result.scalars().first()
+        return user if user else None
+
+

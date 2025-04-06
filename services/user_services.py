@@ -1,4 +1,5 @@
-from repository.crud_user import create_user, get_user_id, delete_user, get_user
+from models.user_model import UserModel
+from repository.crud_user import create_user, get_user_id, delete_user, get_user, get_user_by_login
 from repository.check_user_data import CheckUniquenessData
 from services.password_hashing import hashing_password
 
@@ -58,3 +59,11 @@ async def get_user_services(user_id: int) -> dict:
         "email_address": user.email_address
     }
 
+async def get_user_by_login_service(login: str) -> dict:
+    user = await get_user_by_login(login)
+    if user:
+        user_dict = user.__dict__
+        del user_dict["_sa_instance_state"]
+        return user_dict
+    else:
+        return {"status": "error", "message": "Пользователь не найден"}
